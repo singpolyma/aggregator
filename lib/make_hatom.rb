@@ -33,6 +33,6 @@ def make_hatom_item(meta, item)
 	r << "\t\t<a rel=\"source\" href=\"#{CGI::escapeHTML(meta[:self])}\">#{CGI::escapeHTML(meta[:title])}</a>\n"
 	r << "\t</header>\n"
 	r << "\t<section class=\"entry-content\">#{item[:content]}</section>\n" if item[:content]
-	r << "\n" << item[:xml] << "\n\n" if item[:xml]
+	r << "\n<div class=\"original-content\">" << item[:xml] << "</div>\n\n" if item[:xml]
 	r << "</article>\n"
 end
