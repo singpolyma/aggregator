@@ -20,6 +20,11 @@ def u(string)
 	end
 end
 
+# HTML/XML espace a string, based on CGI module
+def h(string)
+	string.gsub(/&/n, '&amp;').gsub(/\"/n, '&quot;').gsub(/>/n, '&gt;').gsub(/</n, '&lt;')
+end
+
 # Convert relative URI to absolute URI
 def relative_to_absolute(uri, relative_to)
 	return nil unless uri
