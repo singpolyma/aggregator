@@ -2,6 +2,9 @@ require 'rexml/document'
 require 'xmpp4r/client'
 require 'cgi'
 
+$: << File.dirname(__FILE__)
+require 'util'
+
 def make_xmpp_message(meta, item)
 	item[:author] ||= meta[:author] if meta[:author]
 	if meta[:logo]
@@ -23,15 +26,15 @@ def make_xmpp_message(meta, item)
 
 	begin
 		html =  "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml' class='hentry'"
-		html << " id=\"#{CGI::escapeHTML(item[:id])}\"" if item[:id]
+		html << " id=\"#{h item[:id]}\"" if item[:id]
 		html << '>'
 		html << "<span class=\"vcard author\">"  if item[:author]
-		html << "<a class=\"url\" href=\"#{CGI::escapeHTML(item[:author][:url])}\">" if item[:author][:url]
-		html << "<span class=\"fn\">#{CGI::escapeHTML(item[:author][:fn])}</span>" if item[:author][:fn]
+		html << "<a class=\"url\" href=\"#{h item[:author][:url]}\">" if item[:author][:url]
+		html << "<span class=\"fn\">#{h item[:author][:fn]}</span>" if item[:author][:fn]
 		html << '</a>' if item[:author][:url]
 		html << "</span>: " if item[:author]
 		html << "<span class='entry-content'>#{item[:content]}</span> " if item[:content]
-		html << "<a rel='bookmark' href='#{CGI::escapeHTML(item[:bookmark])}'>#</a>" if item[:bookmark]
+		html << "<a rel='bookmark' href='#{h item[:bookmark]}'>#</a>" if item[:bookmark]
 		(item[:in_reply_to] || []).each do |parent|
 			html << " <a rev=\"reply\" rel=\"in-reply-to\" href=\"#{parent[:href]}\">in reply to</a> " if parent[:href]
 		end

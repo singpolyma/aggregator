@@ -2,6 +2,9 @@ require 'rexml/document'
 require 'cgi'
 require 'time'
 
+$: << File.dirname(__FILE__)
+require 'util'
+
 def xml_feed_polyglot(string)
 	root = REXML::Document.new(string).root
 
@@ -71,7 +74,7 @@ def xml_feed_polyglot(string)
 				# Always ends up HTML-safe
 				item[:content] = CGI::unescapeHTML(item[:content])
 			elsif el.attributes['type'] == 'text'
-				item[:content] = CGI::escapeHTML(item[:content])
+				item[:content] = h(item[:content])
 			end
 		}
 		itemel.elements.each('./atom:author|./author|./dc:creator') {|el|
