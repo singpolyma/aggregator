@@ -54,7 +54,7 @@ entries.each do |source, entries|
 				entries << {:entry => entry, :published => hentry_published(entry)}
 			end
 			# Sort entries by pubdate within day
-			entries.sort! {|a,b| a[:published] <=> b[:published]}
+			entries.sort! {|a,b| b[:published] <=> a[:published]}
 			# Dedup items
 			seen = []
 			entries.reject! {|entry|
