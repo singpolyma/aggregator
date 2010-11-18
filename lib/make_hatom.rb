@@ -1,7 +1,13 @@
 require 'cgi'
 
 def make_hatom_item(meta, item)
-	item[:author] = meta[:author] if meta[:author] && !item[:author]
+	item[:author] ||= meta[:author] if meta[:author]
+	if meta[:logo]
+		item[:author] ||= {}
+		item[:author][:logo] ||= meta[:logo]
+	end
+	item[:author][:photo] ||= item[:author][:logo] if item[:author] && item[:author][:logo]
+
 	r =  '<article xmlns="http://www.w3.org/1999/xhtml" '
 	r << "id=\"#{CGI::escapeHTML(item[:id])}\" " if item[:id]
 	r << "class=\"hentry\">\n"
