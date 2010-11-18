@@ -21,6 +21,8 @@ def xml_feed_polyglot(string)
 	root.elements.each('./link') {|el| meta[:link] = el.attributes['href'] ? el.attributes['href'].to_s : el.text}
 	root.elements.each('./atom:link[@rel="self"]') {|el| meta[:self] = el.attributes['href'] }
 
+	root.elements.each('./image/url|./logo') {|el| meta[:logo] = el.text}
+
 	root.elements.each('./atom:author|./author|./dc:creator') {|el|
 		if el.children.length > 0
 			meta[:author] = {}
