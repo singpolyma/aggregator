@@ -13,7 +13,7 @@ def an(o)
 	end
 end
 
-# URI encode a string
+# URI encode a string, based on CGI module
 def u(string)
 	string.gsub(/([^a-zA-Z0-9_.-]+)/n) do
 		'%' + $1.unpack('H2' * $1.size).join('%').upcase
