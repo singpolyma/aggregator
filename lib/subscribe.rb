@@ -1,35 +1,8 @@
-require 'net/https'
 require 'nokogiri'
 require 'uri'
 
 $: << File.dirname(__FILE__)
 require 'util'
-
-# Basic HTTP recursive fetch function (follows redirects)
-def fetch(topic, fetch=nil, temp=false)
-	fetch = topic unless fetch
-	fetch = URI::parse(fetch) unless fetch.is_a?(URI)
-	fetch.path = '/' if fetch.path.to_s == ''
-	response = nil
-	http = Net::HTTP.new(fetch.host, fetch.port)
-	http.use_ssl = true if fetch.scheme == 'https'
-	http.start {
-		response = http.get("#{fetch.path || '/'}#{"?#{fetch.query}" if fetch.query}", {
-			'User-Agent' => 'Aggregator Singpolyma',
-			'Accept' => 'application/rss+xml, application/atom+xml, application/rdf+xml, application/xhtml+xml, text/html; q=0.9'
-		})
-	}
-	case response.code.to_i
-		when 301 # Treat 301 as 302 if we have temp redirected already
-			fetch(temp ? topic : response['location'], response['location'], temp)
-		when 302, 303, 307
-			fetch(topic, response['location'], true)
-		when 200
-			[topic, response]
-		else
-			raise response.body
-	end
-end
 
 # This method takes a topic URI and callback URI, discovers the PSHB hub, and sends a subscribe request
 # Pass in a secret and it will use md5("#{secret}#{topic}#{secret}") as the secret
