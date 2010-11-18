@@ -30,7 +30,7 @@ entries = Hash.new {|h, k| h[k] = {}}
 
 # Go through all the tmp files, read out the entries, and delete the files
 Dir::glob(File.join($config['data_dir'], 'tmp', '*')).each do |file|
-	Nokogiri::parse("<html>#{open(file).read}</html>").search('.hentry').each do |entry|
+	Nokogiri::parse("<html>#{open(file).read.force_encoding('utf-8')}</html>").search('.hentry').each do |entry|
 		published = hentry_published(entry)
 		source = entry.at('*[rel~=source][href]').attributes['href'].to_s
 		entries[source][published.strftime('%Y-%j')] ||= []
