@@ -1,4 +1,4 @@
-DirectoryIndex config.ru
+DirectoryIndex config.ru index.xhtml
 AddHandler cgi-script ru
 <IfModule mod_rewrite.c>
 RewriteEngine On
