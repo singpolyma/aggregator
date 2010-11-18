@@ -19,7 +19,7 @@ def u(string)
 end
 
 # Convert relative URI to absolute URI
-def relavite_to_absolute(uri, relative_to)
+def relative_to_absolute(uri, relative_to)
 	return nil unless uri
 	uri = URI::parse(uri) unless uri.is_a?(URI)
 	relative_to = URI::parse(relative_to) unless relative_to.is_a?(URI)

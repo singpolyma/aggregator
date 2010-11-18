@@ -79,7 +79,7 @@ def subscribe(topic, callback, secret=nil, &blk)
 		doc.search('link[rel~=alternate]').to_a.reverse.each do |link|
 			alternates[link.attributes['type'].to_s] = link.attributes['href'].to_s
 		end
-		return subscribe(relavite_to_absolute(alternates['application/atom+xml'] || alternates['application/rss+xml'], topic), callback, secret, &blk)
+		return subscribe(relative_to_absolute(alternates['application/atom+xml'] || alternates['application/rss+xml'], topic), callback, secret, &blk)
 	end
 
 	raise 'Not a PSHB feed' unless hub && hub != ''
@@ -94,7 +94,7 @@ def subscribe(topic, callback, secret=nil, &blk)
 
 	callback += (callback.index('?') ? '&' : '?') + "topic=#{u topic}"
 
-	hub = relavite_to_absolute(hub, topic)
+	hub = relative_to_absolute(hub, topic)
 	hub.scheme = 'https' # Try HTTPS first
 	body = {'hub.callback' => callback, 'hub.mode' => 'subscribe', 'hub.topic' => topic, 'hub.verify' => 'async'}
 	body['hub.secret'] = Digest::MD5.hexdigest("#{secret}#{topic}#{secret}") if secret
