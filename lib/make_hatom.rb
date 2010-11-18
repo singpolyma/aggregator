@@ -21,6 +21,7 @@ def make_hatom_item(meta, item)
 	r << "\n"
 	r << "\t\t<div class=\"vcard author\">"  if item[:author]
 	r << "<a class=\"url\" href=\"#{CGI::escapeHTML(item[:author][:url])}\">" if item[:author][:url]
+	r << "<img class=\"photo\" src=\"#{CGI::escapeHTML(item[:author][:photo])}\" alt=\"photo\" />" if item[:author][:photo]
 	r << "<span class=\"fn\">#{CGI::escapeHTML(item[:author][:fn])}</span>" if item[:author][:fn]
 	r << '</a>' if item[:author][:url]
 	r << "</div>\n" if item[:author]
