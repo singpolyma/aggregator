@@ -1,6 +1,6 @@
 require 'rexml/document'
 require 'xmpp4r/client'
-require 'cgi'
+require 'htmlentities'
 
 $: << File.dirname(__FILE__)
 require 'util'
@@ -14,8 +14,8 @@ def make_xmpp_message(meta, item)
 	item[:author][:photo] ||= item[:author][:logo] if item[:author] && item[:author][:logo]
 
 	# Build plain text body
-	title = CGI::unescapeHTML(item[:title].to_s.gsub(/<[^<>]+>/, '')).strip
-	content = CGI::unescapeHTML(item[:content].to_s.gsub(/<[^<>]+>/, '')).strip
+	title = HTMLEntities.decode_entities(item[:title].to_s.gsub(/<[^<>]+>/, '')).strip
+	content = HTMLEntities.decode_entities(item[:content].to_s.gsub(/<[^<>]+>/, '')).gsub(/\s+/, ' ').strip
 	content = title if content.length < title.length * 3 && content.include?(title)
 	text = "#{item[:author][:fn] rescue meta[:title]}: #{content} / #{item[:bookmark]}"
 	(item[:in_reply_to] || []).each do |parent|

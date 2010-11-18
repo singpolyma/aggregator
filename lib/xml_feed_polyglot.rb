@@ -1,5 +1,5 @@
 require 'rexml/document'
-require 'cgi'
+require 'htmlentities'
 require 'time'
 
 $: << File.dirname(__FILE__)
@@ -53,7 +53,7 @@ def xml_feed_polyglot(string)
 				el.write(item[:title])
 				item[:title].gsub!(/<[^>]+>/, '').strip!
 			elsif el.attributes['type'].to_s == 'html'
-				item[:title] = CGI::unescapeHTML(el.text)
+				item[:title] = HTMLEntities.decode_entities(el.text)
 			else
 				item[:title] = el.text
 			end
@@ -63,7 +63,7 @@ def xml_feed_polyglot(string)
 		itemel.elements.each('./guid|./atom:id') {|el| item[:id] = el.text}
 		itemel.elements.each('./description|./content:encoded') {|el|
 			# Always end up HTML-safe
-			item[:content] = CGI::unescapeHTML(el.text)
+			item[:content] = HTMLEntities.decode_entities(el.text)
 		}
 		itemel.elements.each('./atom:content') {|el|
 			item[:content] = ''
@@ -72,7 +72,7 @@ def xml_feed_polyglot(string)
 			item[:content].sub!(/<\/content>/, '')
 			if el.attributes['type'] == 'html'
 				# Always ends up HTML-safe
-				item[:content] = CGI::unescapeHTML(item[:content])
+				item[:content] = HTMLEntities.decode_entities(item[:content])
 			elsif el.attributes['type'] == 'text'
 				item[:content] = h(item[:content])
 			end
