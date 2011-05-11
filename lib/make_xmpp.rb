@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'rexml/document'
 require 'xmpp4r/client'
 require 'htmlentities'
@@ -18,6 +19,7 @@ def make_xmpp_message(meta, item)
 	content = HTMLEntities.decode_entities(item[:content].to_s.gsub(/<[^<>]+>/, '')).gsub(/\s+/, ' ').strip
 	content = title if content.length < title.length * 3 && content.include?(title)
 	text = "#{item[:author][:fn] rescue meta[:title]}: #{content} / #{item[:bookmark]}"
+	text << ' ↶' if item[:in_reply_to] && item[:in_reply_to].length > 0
 	(item[:in_reply_to] || []).each do |parent|
 		text << " #{parent[:href]} " if parent[:href]
 	end
