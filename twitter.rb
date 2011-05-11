@@ -11,9 +11,15 @@ consumer = OAuth::Consumer.new(ARGV[0], ARGV[1], :site => 'http://api.twitter.co
 token = OAuth::AccessToken.new(consumer, ARGV[2], ARGV[3])
 
 ['/statuses/home_timeline.json', '/statuses/mentions.json'].each do |endpoint|
-	response = token.get(endpoint).body
+	begin
+		response = token.get(endpoint).body # in here to handle timeouts
+		data = JSON::parse(response)
+	rescue Exception
+		# Twitter API barfed, just ignore and say we got nothing
+		data = []
+	end
 
-	puts JSON::parse(response).map { |tweet|
+	puts data.map { |tweet|
 		next nil if tweet['user']['screen_name'] == ARGV[4]
 		item = {
 			:bookmark => "http://twitter.com/#{tweet['user']['screen_name']}/statuses/#{tweet['id_str']}",
