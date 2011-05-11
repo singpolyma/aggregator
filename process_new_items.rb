@@ -58,7 +58,7 @@ entries.each do |source, entries|
 			# Dedup items
 			seen = []
 			entries.reject! {|entry|
-				id = (entry[:entry].attributes['id'] || Digest::MD5.hexdigest(entry[:entry].to_html)).to_s
+				id = (entry[:entry].attributes['id'] || Digest::MD5.hexdigest(entry[:entry].to_xhtml)).to_s
 				next true if seen.include?(id)
 				seen << id
 				false
@@ -70,7 +70,7 @@ entries.each do |source, entries|
 				fh.puts "<head><title>#{user}</title></head>"
 				fh.puts '<body>'
 				entries.each do |entry|
-					fh.puts entry[:entry].to_html
+					fh.puts entry[:entry].to_xhtml
 				end
 				fh.puts "<a rel=\"prev\" href=\"/feeds/#{user}/#{published.strftime('%Y')}/#{published.strftime('%j').to_i-1}.xhtml\">Previous day</a>"
 				fh.puts "<a rel=\"next\" href=\"/feeds/#{user}/#{published.strftime('%Y')}/#{published.strftime('%j').to_i+1}.xhtml\">Next day</a>"
