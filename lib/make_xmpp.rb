@@ -24,7 +24,7 @@ def make_xmpp_message(meta, item)
 		text << " #{parent[:href]} " if parent[:href]
 	end
 
-	r = Jabber::Message::new(nil, text).set_type(:headline).set_subject(title)
+	r = Jabber::Message::new(nil, text).set_type(:message).set_subject(title)
 
 	begin
 		html =  "<html xmlns='http://jabber.org/protocol/xhtml-im'><body xmlns='http://www.w3.org/1999/xhtml' class='hentry'"
