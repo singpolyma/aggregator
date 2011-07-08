@@ -9,6 +9,7 @@ end
 
 from, password, to, state_file = ARGV
 xmpp_saw = (open(state_file).read rescue '')
+to_write = xmpp_saw
 wrote_state = false
 
 # Create a list of XMPP messages
@@ -20,7 +21,7 @@ from_hatom(STDIN.read).each do |entry|
 	next if hack_filter(entry[:item])
 
 	unless wrote_state
-		open(state_file, 'w') {|fh| fh.write(entry[:item][:id])}
+		to_write = entry[:item][:id]
 		wrote_state = true
 	end
 
@@ -51,3 +52,6 @@ to_send.reverse_each do |msg|
 end
 
 xmpp.close
+
+# Do not write until end so that we try again on fail
+open(state_file, 'w') {|fh| fh.write(to_write)}
