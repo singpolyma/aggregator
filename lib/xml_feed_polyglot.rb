@@ -21,13 +21,14 @@ def xml_feed_polyglot(string)
 	root.add_namespace('thr', 'http://purl.org/syndication/thread/1.0')
 
 	root.elements.each('./title') {|el| meta[:title] = ''; el.write(meta[:title]); meta[:title].gsub!(/<[^>]+>/, '').strip!}
-	root.elements.each('./link') {|el| meta[:link] = el.attributes['href'] ? el.attributes['href'].to_s : el.text}
+	root.elements.each('./link') {|el| meta[:link] = el.attributes['href'] ? el.attributes['href'].to_s : el.text; break }
 	root.elements.each('./atom:link[@rel="self"]') {|el| meta[:self] = el.attributes['href'] }
 
 	root.elements.each('./image/url|./logo') {|el| meta[:logo] = el.text}
 
 	root.elements.each('./atom:author|./author|./dc:creator') {|el|
-		if el.children.length > 0
+		n = el.children.inject(0) {|n,c| c.class == REXML::Text ? n+1 : n }
+		if n > 0
 			meta[:author] = {}
 			el.elements.each('./name') {|c| meta[:author][:fn] = c.text}
 			el.elements.each('./uri') {|c| meta[:author][:url] = c.text}
@@ -53,7 +54,7 @@ def xml_feed_polyglot(string)
 				el.write(item[:title])
 				item[:title].gsub!(/<[^>]+>/, '').strip!
 			elsif el.attributes['type'].to_s == 'html'
-				item[:title] = HTMLEntities.decode_entities(el.text)
+				item[:title] = el.text
 			else
 				item[:title] = el.text
 			end
@@ -61,9 +62,13 @@ def xml_feed_polyglot(string)
 		itemel.elements.each('./link') {|el| item[:bookmark] = el.text}
 		itemel.elements.each('./atom:link[@rel="alternate"][@type="text/html"]') {|el| item[:bookmark] = el.attributes['href']}
 		itemel.elements.each('./guid|./atom:id') {|el| item[:id] = el.text}
-		itemel.elements.each('./description|./content:encoded') {|el|
+		itemel.elements.each('./content:encoded') {|el|
 			# Always end up HTML-safe
-			item[:content] = HTMLEntities.decode_entities(el.text)
+			item[:content] = el.text
+		}
+		itemel.elements.each('./description') {|el|
+			# Always end up HTML-safe
+			item[:content] = el.text
 		}
 		itemel.elements.each('./atom:content') {|el|
 			item[:content] = ''
@@ -78,7 +83,8 @@ def xml_feed_polyglot(string)
 			end
 		}
 		itemel.elements.each('./atom:author|./author|./dc:creator') {|el|
-			if el.children.length > 0
+			n = el.children.inject(0) {|n,c| c.class == REXML::Text ? n+1 : n }
+			if n > 0
 				item[:author] = {}
 				el.elements.each('./name') {|c| item[:author][:fn] = c.text}
 				el.elements.each('./uri') {|c| item[:author][:url] = c.text}
@@ -88,8 +94,23 @@ def xml_feed_polyglot(string)
 		}
 		itemel.elements.each('./pubDate|./dc:date|./published') {|el| item[:published] = Time.parse(el.text)}
 
-		itemel.elements.each('./category') {|el| item[:category] << el.text}
+		itemel.elements.each('./category|./atom:category') {|el| item[:category] << (el.text || el.attributes['term'])}
 		itemel.elements.each('./thr:in-reply-to') {|el| item[:in_reply_to] << {:ref => el.attributes['ref'], :href => el.attributes['href']}}
+
+		itemel.elements.each('./source') {|el|
+			item[:source] = {
+				:id    => el.attributes['url'],
+				:self  => el.attributes['url'],
+				:title => el.text
+			}
+		}
+
+		itemel.elements.each('./atom:source') {|el|
+			item[:source] = {}
+			el.elements.each('./id') {|c| item[:source][:id] = c.text}
+			el.elements.each('./title') {|c| item[:source][:title] = c.text}
+			el.elements.each('./atom:link[@rel="self"]') {|c| item[:source][:self] = c.attributes['href']}
+		}
 
 		items << item
 	}
