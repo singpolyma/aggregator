@@ -13,6 +13,7 @@ HOSTNAME = `hostname`.chomp
 
 i = 0
 from_hatom(STDIN.read).each do |entry|
+	entry[:item][:id] = entry[:item][:bookmark] if entry[:item][:id].to_s == ''
 	break if entry[:item][:id] == saw
 
 	unless wrote_state
