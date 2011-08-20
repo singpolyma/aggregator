@@ -14,7 +14,7 @@ end
 
 # Handle encoding
 data = response.body
-data.force_encoding(type_params['charset']) if type_params['charset']
+data = data.force_encoding(type_params['charset']).encode('utf-8') if type_params['charset']
 
 # Parse feed
 meta, items = case type
