@@ -11,8 +11,9 @@ def xml_feed_polyglot(string)
 	meta = {:self => @self}
 	items = []
 
-	if root.name == 'rss'
-		root.elements.each('./channel') {|el| root = el} # <channel> is really the root
+	# Channel contains root-level elements
+	root.elements.each('./channel') do |channel|
+		channel.children.each {|el| root << el}
 	end
 
 	root.add_namespace('content', 'http://purl.org/rss/1.0/modules/content/')
@@ -27,7 +28,7 @@ def xml_feed_polyglot(string)
 	root.elements.each('./image/url|./logo') {|el| meta[:logo] = el.text}
 
 	root.elements.each('./atom:author|./author|./dc:creator') {|el|
-		n = el.children.inject(0) {|n,c| c.class == REXML::Text ? n+1 : n }
+		n = el.children.inject(0) {|n,c| c.class != REXML::Text ? n+1 : n }
 		if n > 0
 			meta[:author] = {}
 			el.elements.each('./name') {|c| meta[:author][:fn] = c.text}
@@ -62,11 +63,11 @@ def xml_feed_polyglot(string)
 		itemel.elements.each('./link') {|el| item[:bookmark] = el.text}
 		itemel.elements.each('./atom:link[@rel="alternate"][@type="text/html"]') {|el| item[:bookmark] = el.attributes['href']}
 		itemel.elements.each('./guid|./atom:id') {|el| item[:id] = el.text}
-		itemel.elements.each('./content:encoded') {|el|
+		itemel.elements.each('./description') {|el|
 			# Always end up HTML-safe
 			item[:content] = el.text
 		}
-		itemel.elements.each('./description') {|el|
+		itemel.elements.each('./content:encoded') {|el|
 			# Always end up HTML-safe
 			item[:content] = el.text
 		}
@@ -83,7 +84,7 @@ def xml_feed_polyglot(string)
 			end
 		}
 		itemel.elements.each('./atom:author|./author|./dc:creator') {|el|
-			n = el.children.inject(0) {|n,c| c.class == REXML::Text ? n+1 : n }
+			n = el.children.inject(0) {|n,c| c.class != REXML::Text ? n+1 : n }
 			if n > 0
 				item[:author] = {}
 				el.elements.each('./name') {|c| item[:author][:fn] = c.text}
