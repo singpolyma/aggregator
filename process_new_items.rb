@@ -1,6 +1,5 @@
 require 'nokogiri'
 require 'yaml'
-require 'time'
 require 'fileutils'
 require 'digest/md5'
 
@@ -11,19 +10,6 @@ begin
 	$config = YAML::load_file('/etc/aggregator-singpolyma/config.yml')
 rescue Errno::ENOENT
 	$config = YAML::load_file(File.dirname(__FILE__) + '/config.yml')
-end
-
-# Utility function to get the published time of an hentry
-def hentry_published(entry)
-	published = (entry.at('.published') || entry.at('.updated') || entry.at('time[pubdate]'))
-	# TODO: support the new datetime design pattern
-	if published.attributes['datetime']
-		published = Time.parse(published.attributes['datetime'].to_s)
-	elsif published.name == 'abbr' && published.attributes['title']
-		published = Time.parse(published.attributes['title'].to_s)
-	else
-		published = Time.parse(published.inner_html)
-	end
 end
 
 entries = Hash.new {|h, k| h[k] = {}}

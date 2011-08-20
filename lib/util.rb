@@ -1,4 +1,5 @@
 require 'net/https'
+require 'time'
 
 # Eat nils
 def an(o)
@@ -23,6 +24,19 @@ end
 # HTML/XML escape a string, based on CGI module
 def h(string)
 	string.gsub(/&/, '&amp;').gsub(/\"/, '&quot;').gsub(/>/, '&gt;').gsub(/</, '&lt;')
+end
+
+# Utility function to get the published time of an hentry
+def hentry_published(entry)
+	published = (entry.at('.published') || entry.at('.updated') || entry.at('time[pubdate]'))
+	# TODO: support the new datetime design pattern
+	if published.attributes['datetime']
+		published = Time.parse(published.attributes['datetime'].to_s)
+	elsif published.name == 'abbr' && published.attributes['title']
+		published = Time.parse(published.attributes['title'].to_s)
+	else
+		published = Time.parse(published.inner_html)
+	end
 end
 
 # Convert relative URI to absolute URI
