@@ -4,7 +4,7 @@ require 'util'
 require 'nokogiri'
 
 def from_hatom(string)
-	Nokogiri::parse(string).search('.hentry').map do |entry|
+	Nokogiri::parse("<html xmlns=\"http://www.w3.org/1999/xhtml\">#{string}</html>").search('.hentry').map do |entry|
 		content_node = entry.at('.entry-content')
 		{
 			:item => {
@@ -23,7 +23,7 @@ def from_hatom(string)
 					:fn => entry.at('.author .fn').text,
 					:url => (entry.at('.author .url').attributes['href'].to_s rescue nil)
 				},
-				:bookmark => entry.at('a[rel~=bookmark]').attributes['href'].to_s,
+				:bookmark => (entry.at('a[rel~=bookmark]').attributes['href'].to_s rescue nil),
 				:published => hentry_published(entry),
 				:xml => an(entry.at('.original-content')).inner_html
 			},
