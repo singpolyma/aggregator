@@ -67,10 +67,9 @@ HTML
 
 		# Set input encoding to what it has declared to be
 		data = data.force_encode(req.media_type_params['charset']) if req.media_type_params['charset']
-		meta = items = nil
-		case req.media_type
+		meta, items = case req.media_type
 			when 'application/rss+xml', 'application/rdf+xml', 'application/atom+xml'
-				meta, items = xml_feed_polyglot(data)
+				xml_feed_polyglot(data)
 			else
 				return [400, {'Content-Type' => 'text/plain; charset=utf-8'}, "Cannot process #{req.media_type}\n"]
 		end
