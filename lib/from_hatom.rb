@@ -1,3 +1,6 @@
+$: << File.dirname(__FILE__)
+require 'util'
+
 require 'nokogiri'
 
 def from_hatom(string)
@@ -12,15 +15,17 @@ def from_hatom(string)
 					uri = (r.attributes['href'].to_s rescue nil)
 					if uri && uri =~ /^http/
 						{:href => uri}
-					else
-						nil
+					elsif uri
+						{:ref => uri}
 					end
 				}.compact,
 				:author => {
 					:fn => entry.at('.author .fn').text,
 					:url => (entry.at('.author .url').attributes['href'].to_s rescue nil)
 				},
-				:bookmark => entry.at('a[rel~=bookmark]').attributes['href'].to_s
+				:bookmark => entry.at('a[rel~=bookmark]').attributes['href'].to_s,
+				:published => hentry_published(entry),
+				:xml => an(entry.at('.original-content')).inner_html
 			},
 			:meta => {
 				:self => (entry.at('*[rel~=source]').attributes['href'].to_s rescue nil),
