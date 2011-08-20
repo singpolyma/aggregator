@@ -23,7 +23,7 @@ end
 
 # HTML/XML escape a string, based on CGI module
 def h(string)
-	string.gsub(/&/, '&amp;').gsub(/\"/, '&quot;').gsub(/>/, '&gt;').gsub(/</, '&lt;')
+	string.to_s.gsub(/&/, '&amp;').gsub(/\"/, '&quot;').gsub(/>/, '&gt;').gsub(/</, '&lt;')
 end
 
 # Utility function to get the published time of an hentry
