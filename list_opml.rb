@@ -7,7 +7,7 @@ def process_node(node, path='')
 		title = el.attributes['text'].to_s
 		title = el.attributes['xmlUrl'].gsub(/\/, '.'/) if title == ''
 		if el.attributes['xmlUrl']
-			puts "#{path}/#{title}\t#{el.attributes['xmlUrl']}"
+			puts "#{path}#{title}\t#{el.attributes['xmlUrl']}"
 		end
 		# Process as structure node
 		process_node(el, path + title + '/')
