@@ -12,7 +12,7 @@ wrote_state = false
 HOSTNAME = `hostname`.chomp
 
 i = 0
-from_hatom(STDIN.read).each do |entry|
+from_hatom(STDIN.read.force_encoding('utf-8')).each do |entry|
 	entry[:item][:id] = entry[:item][:bookmark] if entry[:item][:id].to_s == ''
 	break if entry[:item][:id] == saw
 
