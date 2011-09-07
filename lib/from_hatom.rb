@@ -6,11 +6,14 @@ require 'nokogiri'
 def from_hatom(string)
 	Nokogiri::parse("<html xmlns=\"http://www.w3.org/1999/xhtml\">#{string}</html>").search('.hentry').map do |entry|
 		content_node = entry.at('.entry-content')
+		content = if content_node
+			content_node.to_xhtml.sub(/^<#{content_node.name}[^>]*>/, '').sub(/<\/#{content_node.name}>$/, '')
+		end
 		{
 			:item => {
 				:id => entry.attributes['id'].to_s,
 				:title => (entry.at('.entry-title').text rescue ''),
-				:content => content_node.to_xhtml.sub(/^<#{content_node.name}[^>]*>/, '').sub(/<\/#{content_node.name}>$/, ''),
+				:content => content,
 				:in_reply_to => entry.search('*[rev~=reply]').map {|r|
 					uri = (r.attributes['href'].to_s rescue nil)
 					if uri && uri =~ /^http/
@@ -20,7 +23,7 @@ def from_hatom(string)
 					end
 				}.compact,
 				:author => {
-					:fn => entry.at('.author .fn').text,
+					:fn => an(entry.at('.author .fn')).text,
 					:url => (entry.at('.author .url').attributes['href'].to_s rescue nil)
 				},
 				:bookmark => (entry.at('a[rel~=bookmark]').attributes['href'].to_s rescue nil),
