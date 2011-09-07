@@ -3,11 +3,14 @@ require 'util'
 
 def make_hatom_item(meta, item)
 	item[:author] ||= meta[:author] if meta[:author]
+	item[:author] ||= {}
 	if meta[:logo]
 		item[:author] ||= {}
 		item[:author][:logo] ||= meta[:logo]
 	end
 	item[:author][:photo] ||= item[:author][:logo] if item[:author] && item[:author][:logo]
+
+	item[:published] ||= Time.now
 
 	r =  '<article xmlns="http://www.w3.org/1999/xhtml" '
 	r << "id=\"#{h item[:id]}\" " if item[:id]
