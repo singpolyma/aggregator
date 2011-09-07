@@ -77,7 +77,7 @@ def fetch(topic, fetch=nil, temp=false)
 		when 200
 			[topic, response]
 		else
-			raise response.body
+			raise "Fetch failed: #{response.code} #{response.body}"
 	end
 end
 
