@@ -45,7 +45,7 @@ def make_mime(meta, item)
 	r << "Content-Type: text/plain; charset=utf-8\n"
 	r << "Content-Transfer-Encoding: 8bit\n"
 	r << "\n"
-	r << HTML2Markdown.new(item[:content].to_s.gsub(/\s+/, ' ')).to_s.sub(/^\n*/, '').sub(/\n*$/, '')
+	r << HTML2Markdown.new(item[:content].to_s.force_encoding('utf-8').gsub(/\s+/, ' ')).to_s.sub(/^\n*/, '').sub(/\n*$/, '')
 
 	r << "\n\n"
 	
