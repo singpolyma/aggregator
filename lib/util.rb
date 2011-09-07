@@ -68,11 +68,12 @@ def fetch(topic, fetch=nil, temp=false)
 			'Accept' => 'application/rss+xml, application/atom+xml, application/rdf+xml, application/xhtml+xml, text/html; q=0.9'
 		})
 	}
+	location = lambda { relative_to_absolute(response['location'], fetch) }
 	case response.code.to_i
 		when 301 # Treat 301 as 302 if we have temp redirected already
-			fetch(temp ? topic : response['location'], response['location'], temp)
+			fetch(temp ? topic : location.call, location.call, temp)
 		when 302, 303, 307
-			fetch(topic, response['location'], true)
+			fetch(topic, location.call, true)
 		when 200
 			[topic, response]
 		else
