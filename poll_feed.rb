@@ -7,14 +7,19 @@ url, response = fetch(ARGV[0])
 
 # Parse Content-Type header
 type, type_params = response['content-type'].split(/\s*;\s*/, 2)
-type_params = type_params.split(/\s*;\s*/).inject({}) do |h, param|
-	k, v = param.split(/=/, 2)
-	h.merge({k => v})
+type_params = if type_params
+	type_params.split(/\s*;\s*/).inject({}) do |h, param|
+		k, v = param.split(/=/, 2)
+		h.merge({k => v})
+	end
+else
+	{}
 end
 
 # Handle encoding
 data = response.body
-data = data.force_encoding(type_params['charset']).encode('utf-8') if type_params['charset']
+type_params['charset'] ||= 'utf-8'
+data = data.force_encoding(type_params['charset']).encode('utf-8', :undef => :replace)
 
 # Parse feed
 meta, items = case type
