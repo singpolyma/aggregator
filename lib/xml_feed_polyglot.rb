@@ -69,11 +69,11 @@ def xml_feed_polyglot(string)
 		itemel.elements.each('./guid|./atom:id') {|el| item[:id] = txt(el)}
 		itemel.elements.each('./description') {|el|
 			# Always end up HTML-safe
-			item[:content] = txt(el)
+			item[:content] = HTMLEntities.decode_entities(txt(el))
 		}
 		itemel.elements.each('./content:encoded') {|el|
 			# Always end up HTML-safe
-			item[:content] = txt(el)
+			item[:content] = HTMLEntities.decode_entities(txt(el))
 		}
 		itemel.elements.each('./atom:content') {|el|
 			item[:content] = ''
